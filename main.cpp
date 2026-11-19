@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <iomanip>
 using namespace std;
 
 const int MAX = 100;
@@ -10,6 +11,18 @@ bool tinkamaKategorija(string kategorija) {
     }
     return false;
 }
+
+double eilutesSuma(double kaina, int kiekis) {
+    return kaina * kiekis;
+}
+
+double nuolaida(double suma, int kiekis) {
+    if (kiekis >= 10) {
+        return suma * 0.10;
+    }
+    return 0;
+}
+
 int main() {
     string kategorijos[MAX];
     string pavadinimai[MAX];
@@ -30,6 +43,7 @@ int main() {
         cout << "Klaida: prekiu skaicius turi buti nuo 1 iki " << MAX << endl;
         return 1;
     }
+
 
     for (int i = 0; i < n; i++) {
         char kabliataskis;
@@ -57,8 +71,13 @@ int main() {
             return 1;
         }
     }
+
+    cout << fixed << setprecision(2);
+
         for (int i = 0; i < n; i++) {
-            cout << kategorijos[i] << " | " << pavadinimai[i] << endl;
+            double suma = eilutesSuma(kainos[i], kiekiai[i]);
+            double nuol = nuolaida(suma, kiekiai[i]);
+            cout << kategorijos[i] << " | " << pavadinimai[i] << " | " << kainos[i] << " | " << kiekiai[i] << " | " << suma << " | " << nuol << " | " << suma - nuol << endl;
         }
         failas.close();
     return 0;
