@@ -4,7 +4,12 @@
 using namespace std;
 
 const int MAX = 100;
-
+bool tinkamaKategorija(string kategorija) {
+    if (kategorija == "Dviraciai" || kategorija == "Dalys" || kategorija == "Aksesuarai") {
+        return true;
+    }
+    return false;
+}
 int main() {
     string kategorijos[MAX];
     string pavadinimai[MAX];
@@ -21,7 +26,10 @@ int main() {
     failas >> n;
     cout << "Prekiu skaicius faile: " << n << endl;
 
-    failas.close();
+    if (failas.fail() || n < 1 || n > MAX) {
+        cout << "Klaida: prekiu skaicius turi buti nuo 1 iki " << MAX << endl;
+        return 1;
+    }
 
     for (int i = 0; i < n; i++) {
         char kabliataskis;
@@ -32,10 +40,26 @@ int main() {
         //skaiciams
         failas >> kainos[i] >> kabliataskis >> kiekiai[i];
 
+        if (failas.fail() || kabliataskis != ';') {
+            cout << "Klaida: nepavyko nuskaityti " << i + 1 << "-o iraso." << endl;
+            return 1;
+        }
+        if (!tinkamaKategorija(kategorijos[i])) {
+            cout << "Klaida: " << i + 1 << "-ame irase netinkama kategorija." << endl;
+            return 1;
+        }
+        if (kainos[i] <= 0) {
+            cout << "Klaida: " << i + 1 << "-ame irase kaina turi buti teigiama." << endl;
+            return 1;
+        }
+        if (kiekiai[i] <= 0) {
+            cout << "Klaida: " << i + 1 << "-ame irase kiekis turi buti teigiamas." << endl;
+            return 1;
+        }
+    }
         for (int i = 0; i < n; i++) {
             cout << kategorijos[i] << " | " << pavadinimai[i] << endl;
         }
-    }
-
+        failas.close();
     return 0;
 }
