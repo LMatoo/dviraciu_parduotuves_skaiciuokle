@@ -4,7 +4,11 @@
 #include <iomanip>
 using namespace std;
 
-const int MAX = 100;
+const int MAX_PREKIU = 100;
+
+//**Funkcijos**
+
+// Ar kategorija yra viena is triju leidziamu?
 bool tinkamaKategorija(string kategorija) {
     if (kategorija == "Dviraciai" || kategorija == "Dalys" || kategorija == "Aksesuarai") {
         return true;
@@ -12,22 +16,45 @@ bool tinkamaKategorija(string kategorija) {
     return false;
 }
 
-double eilutesSuma(double kaina, int kiekis) {
-    return kaina * kiekis;
+// Vienos prekes suma pries nuolaida: vieneto kaina * kiekis
+double eilutesSuma(double vienetoKaina, int uzsakytasKiekis) {
+    return vienetoKaina * uzsakytasKiekis;
 }
 
-double nuolaida(double suma, int kiekis) {
-    if (kiekis >= 10) {
-        return suma * 0.10;
+// Nuolaida eurais: 10 %, jei uzsakyta bent 10 vienetu, kitaip 0
+double nuolaida(double vienosEilutesSuma, int uzsakytasKiekis) {
+    if (uzsakytasKiekis >= 10) {
+        return vienosEilutesSuma * 0.10;
     }
     return 0;
 }
 
+// Viso uzsakymo suma pries nuolaidas
+double bendraSumaPriesNuolaidas(double kainos[], int kiekiai[], int prekiuSkaicius) {
+    double visuPrekiuSuma = 0;
+    for (int i = 0; i < prekiuSkaicius; i++) {
+        double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
+        visuPrekiuSuma = visuPrekiuSuma + vienosEilutesSuma;
+    }
+    return visuPrekiuSuma;
+}
+
+// Visu nuolaidu suma
+double bendraNuolaida(double kainos[], int kiekiai[], int prekiuSkaicius) {
+    double visuNuolaiduSuma = 0;
+    for (int i = 0; i < prekiuSkaicius; i++) {
+        double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
+        double vienosPrekesNuolaida = nuolaida(vienosEilutesSuma, kiekiai[i]);
+        visuNuolaiduSuma = visuNuolaiduSuma + vienosPrekesNuolaida;
+    }
+    return visuNuolaiduSuma;
+}
+
 int main() {
-    string kategorijos[MAX];
-    string pavadinimai[MAX];
-    double kainos[MAX];
-    int kiekiai[MAX];
+    string kategorijos[MAX_PREKIU];
+    string pavadinimai[MAX_PREKIU];
+    double kainos[MAX_PREKIU];
+    int kiekiai[MAX_PREKIU];
 
     ifstream failas("uzsakymas.txt");
     if (!failas.is_open()) {
@@ -35,23 +62,23 @@ int main() {
         return 1;
     }
 
-    int n;
-    failas >> n;
-    cout << "Prekiu skaicius faile: " << n << endl;
+    int prekiuSkaicius;
 
-    if (failas.fail() || n < 1 || n > MAX) {
-        cout << "Klaida: prekiu skaicius turi buti nuo 1 iki " << MAX << endl;
+    if (failas.fail() || prekiuSkaicius < 1 || prekiuSkaicius > MAX_PREKIU) {
+        cout << "Klaida: prekiu skaicius turi buti nuo 1 iki " << MAX_PREKIU << endl;
         return 1;
     }
 
+    failas >> prekiuSkaicius;
+    cout << "Prekiu skaicius faile: " << prekiuSkaicius << endl;
 
-    for (int i = 0; i < n; i++) {
+    for (int i = 0; i < prekiuSkaicius; i++) {
         char kabliataskis;
         failas >> ws;
-        //getline, nes pavadinime yra tarpu, o >> sustotų ant pirmo tarpo.
+        // getline, nes pavadinime yra tarpu, o >> sustotu ties pirmu tarpu
         getline(failas, kategorijos[i], ';');
         getline(failas, pavadinimai[i], ';');
-        //skaiciams
+        // skaiciai
         failas >> kainos[i] >> kabliataskis >> kiekiai[i];
 
         if (failas.fail() || kabliataskis != ';') {
@@ -71,14 +98,30 @@ int main() {
             return 1;
         }
     }
+    failas.close();
 
     cout << fixed << setprecision(2);
 
-        for (int i = 0; i < n; i++) {
-            double suma = eilutesSuma(kainos[i], kiekiai[i]);
-            double nuol = nuolaida(suma, kiekiai[i]);
-            cout << kategorijos[i] << " | " << pavadinimai[i] << " | " << kainos[i] << " | " << kiekiai[i] << " | " << suma << " | " << nuol << " | " << suma - nuol << endl;
-        }
-        failas.close();
+    // Kiekvienos prekes eilutes spausdinimas
+    for (int i = 0; i < prekiuSkaicius; i++) {
+        double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
+        double vienosPrekesNuolaida = nuolaida(vienosEilutesSuma, kiekiai[i]);
+        double vienosPrekesSumaPoNuolaidos = vienosEilutesSuma - vienosPrekesNuolaida;
+        cout << "Kategorija: " << kategorijos[i] << " | " << "Pavadinimas: " << pavadinimai[i] << " | "
+             << "Vnt. Kaina: " << kainos[i] << " | " << "Kiekis: " << kiekiai[i] << " | "
+             << "Suma pries nuolaida: " << vienosEilutesSuma << " | " << "Prekiu nuolaidos: " << vienosPrekesNuolaida << " | "
+             << "Galutine suma: " << vienosPrekesSumaPoNuolaidos << "\n" << endl;
+    }
+
+    // Viso uzsakymo sumos
+    double sumaPriesNuolaidas = bendraSumaPriesNuolaidas(kainos, kiekiai, prekiuSkaicius);
+    double nuolaiduSuma = bendraNuolaida(kainos, kiekiai, prekiuSkaicius);
+    double galutineSuma = sumaPriesNuolaidas - nuolaiduSuma;
+
+    cout << endl;
+    cout << "Suma pries nuolaidas: " << sumaPriesNuolaidas << endl;
+    cout << "Nuolaidu suma: " << nuolaiduSuma << endl;
+    cout << "Galutine suma: " << galutineSuma << endl;
+
     return 0;
 }
