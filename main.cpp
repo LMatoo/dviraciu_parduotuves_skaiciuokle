@@ -33,6 +33,7 @@ double nuolaida(double vienosEilutesSuma, int uzsakytasKiekis) {
 double bendraSumaPriesNuolaidas(double kainos[], int kiekiai[], int prekiuSkaicius) {
     double visuPrekiuSuma = 0;
     for (int i = 0; i < prekiuSkaicius; i++) {
+        // Vienos prekes suma pries nuolaida: vieneto kaina * kiekis
         double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
         visuPrekiuSuma = visuPrekiuSuma + vienosEilutesSuma;
     }
@@ -43,12 +44,31 @@ double bendraSumaPriesNuolaidas(double kainos[], int kiekiai[], int prekiuSkaici
 double bendraNuolaida(double kainos[], int kiekiai[], int prekiuSkaicius) {
     double visuNuolaiduSuma = 0;
     for (int i = 0; i < prekiuSkaicius; i++) {
+        // Vienos prekes suma pries nuolaida: vieneto kaina * kiekis
         double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
+        // Nuolaida eurais: 10 %, jei uzsakyta bent 10 vienetu, kitaip 0
         double vienosPrekesNuolaida = nuolaida(vienosEilutesSuma, kiekiai[i]);
         visuNuolaiduSuma = visuNuolaiduSuma + vienosPrekesNuolaida;
     }
     return visuNuolaiduSuma;
 }
+
+double kategorijosSuma(string kategorijos[], double kainos[], int kiekiai[],
+    int prekiuSkaicius, string pasirinktaKategorija) {
+    double kategorijosMoketinaSuma = 0;
+    for (int i = 0; i < prekiuSkaicius; i++) {
+        if (kategorijos[i] == pasirinktaKategorija) {
+            // Vienos prekes suma pries nuolaida: vieneto kaina * kiekis
+            double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
+            // Nuolaida eurais: 10 %, jei uzsakyta bent 10 vienetu, kitaip 0
+            double vienosPrekesNuolaida = nuolaida(vienosEilutesSuma, kiekiai[i]);
+            double sumaPoNuolaidos = vienosEilutesSuma - vienosPrekesNuolaida;
+            kategorijosMoketinaSuma = kategorijosMoketinaSuma + sumaPoNuolaidos;
+        }
+    }
+    return kategorijosMoketinaSuma;
+
+    }
 
 int main() {
     string kategorijos[MAX_PREKIU];
@@ -63,14 +83,13 @@ int main() {
     }
 
     int prekiuSkaicius;
+    failas >> prekiuSkaicius;
+    cout << "Prekiu skaicius faile: " << prekiuSkaicius << endl;
 
     if (failas.fail() || prekiuSkaicius < 1 || prekiuSkaicius > MAX_PREKIU) {
         cout << "Klaida: prekiu skaicius turi buti nuo 1 iki " << MAX_PREKIU << endl;
         return 1;
     }
-
-    failas >> prekiuSkaicius;
-    cout << "Prekiu skaicius faile: " << prekiuSkaicius << endl;
 
     for (int i = 0; i < prekiuSkaicius; i++) {
         char kabliataskis;
@@ -122,6 +141,10 @@ int main() {
     cout << "Suma pries nuolaidas: " << sumaPriesNuolaidas << endl;
     cout << "Nuolaidu suma: " << nuolaiduSuma << endl;
     cout << "Galutine suma: " << galutineSuma << endl;
+    cout << endl;
+    cout << "Dviraciai: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Dviraciai") << endl;
+    cout << "Dalys: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Dalys") << endl;
+    cout << "Aksesuarai: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Aksesuarai") << endl;
 
     return 0;
 }
