@@ -121,30 +121,70 @@ int main() {
 
     cout << fixed << setprecision(2);
 
-    // Kiekvienos prekes eilutes spausdinimas
-    for (int i = 0; i < prekiuSkaicius; i++) {
-        double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
-        double vienosPrekesNuolaida = nuolaida(vienosEilutesSuma, kiekiai[i]);
-        double vienosPrekesSumaPoNuolaidos = vienosEilutesSuma - vienosPrekesNuolaida;
-        cout << "Kategorija: " << kategorijos[i] << " | " << "Pavadinimas: " << pavadinimai[i] << " | "
-             << "Vnt. Kaina: " << kainos[i] << " | " << "Kiekis: " << kiekiai[i] << " | "
-             << "Suma pries nuolaida: " << vienosEilutesSuma << " | " << "Prekiu nuolaidos: " << vienosPrekesNuolaida << " | "
-             << "Galutine suma: " << vienosPrekesSumaPoNuolaidos << "\n" << endl;
-    }
+    char pasirinkimas;
+    do {
+        cout << endl;
+        cout << "========= MENIU ==========" << endl;
+        cout << "1. Perziureti visas uzsakymo prekes" << endl;
+        cout << "2. Perziureti pasirinktos kategorijos prekes" << endl;
+        cout << "3. Perziureti viso uzsakymo sumas" << endl;
+        cout << "4. Perziureti sumas pagal kategorijas" << endl;
+        cout << "5. Parodyti visa uzsakymo ataskaita" << endl;
+        cout << "6. Issaugoti visa ataskaita i faila" << endl;
+        cout << "7. Iseiti" << endl;
+        cout << "Jusu pasirinkimas: ";
+        cin >> pasirinkimas;
+        cin.ignore(1000, '\n');
+        cout << endl;
 
-    // Viso uzsakymo sumos
-    double sumaPriesNuolaidas = bendraSumaPriesNuolaidas(kainos, kiekiai, prekiuSkaicius);
-    double nuolaiduSuma = bendraNuolaida(kainos, kiekiai, prekiuSkaicius);
-    double galutineSuma = sumaPriesNuolaidas - nuolaiduSuma;
+        switch (pasirinkimas) {
+            case '1':
+                // Kiekvienos prekes eilutes spausdinimas
+                for (int i = 0; i < prekiuSkaicius; i++) {
+                    double vienosEilutesSuma = eilutesSuma(kainos[i], kiekiai[i]);
+                    double vienosPrekesNuolaida = nuolaida(vienosEilutesSuma, kiekiai[i]);
+                    double vienosPrekesSumaPoNuolaidos = vienosEilutesSuma - vienosPrekesNuolaida;
+                    cout << "Kategorija: " << kategorijos[i] << " | " << "Pavadinimas: " << pavadinimai[i] << " | "
+                         << "Vnt. Kaina: " << kainos[i] << " | " << "Kiekis: " << kiekiai[i] << " | "
+                         << "Suma pries nuolaida: " << vienosEilutesSuma << " | " << "Prekiu nuolaidos: " << vienosPrekesNuolaida << " | "
+                         << "Galutine suma: " << vienosPrekesSumaPoNuolaidos << "\n" << endl;
+                }
+                break;
+            case '2':
+                cout << "Pasirinktos kategorijos prekes" << endl;
+                break;
+            case '3': {
+                // Viso uzsakymo sumos
+                double sumaPriesNuolaidas = bendraSumaPriesNuolaidas(kainos, kiekiai, prekiuSkaicius);
+                double nuolaiduSuma = bendraNuolaida(kainos, kiekiai, prekiuSkaicius);
+                double galutineSuma = sumaPriesNuolaidas - nuolaiduSuma;
 
-    cout << endl;
-    cout << "Suma pries nuolaidas: " << sumaPriesNuolaidas << endl;
-    cout << "Nuolaidu suma: " << nuolaiduSuma << endl;
-    cout << "Galutine suma: " << galutineSuma << endl;
-    cout << endl;
-    cout << "Dviraciai: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Dviraciai") << endl;
-    cout << "Dalys: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Dalys") << endl;
-    cout << "Aksesuarai: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Aksesuarai") << endl;
+                cout << endl;
+                cout << "Suma pries nuolaidas: " << sumaPriesNuolaidas << endl;
+                cout << "Nuolaidu suma: " << nuolaiduSuma << endl;
+                cout << "Galutine suma: " << galutineSuma << endl;
+                cout << endl;
+                break;
+            }
+            case '4':
+                cout << "Dviraciai: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Dviraciai") << endl;
+                cout << "Dalys: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Dalys") << endl;
+                cout << "Aksesuarai: " << kategorijosSuma(kategorijos, kainos, kiekiai, prekiuSkaicius, "Aksesuarai") << endl;
+                break;
+            case '5':
+                cout << "Ataskaita" << endl;
+                break;
+            case '6':
+                cout << "Ataskaitos issaugojimas" << endl;
+                break;
+            case '7':
+                cout << "Viso gero!" << endl;
+                break;
+
+            default:
+                cout << "Netinkamas pasirinkimas, irasykite nuo 1-7." << endl;
+        }
+    } while (pasirinkimas != '7');
 
     return 0;
 }
